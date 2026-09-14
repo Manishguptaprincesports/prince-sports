@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://manishguptaprincesports.github.io/prince-sports/sitemap.xml
