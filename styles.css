@@ -82,9 +82,9 @@ a{text-decoration:none;color:inherit}
 .card-img{position:relative;background:linear-gradient(160deg,#eef2f7,#dfe7f1);display:flex;align-items:center;justify-content:center;height:180px;overflow:hidden}
 .card-img svg{width:84px;height:84px;color:#33415c;transition:transform .45s;transform-origin:center}
 .card:hover .card-img svg{transform:scale(1.15) rotate(-6deg)}
-.badge{position:absolute;top:12px;left:12px;background:var(--orange);color:#fff;font-size:.72rem;font-weight:800;padding:5px 10px;border-radius:8px;letter-spacing:.5px}
+.badge{position:absolute;top:12px;left:12px;background:var(--orange);color:#fff;font-size:.72rem;font-weight:800;padding:5px 10px;border-radius:8px;letter-spacing:.5px;z-index:2}
 .badge-off{background:#e11d48}
-.tag{position:absolute;top:12px;right:12px;background:rgba(11,27,51,.85);color:#fff;font-size:.66rem;padding:4px 9px;border-radius:8px;font-weight:700;letter-spacing:.4px}
+.tag{position:absolute;top:12px;right:12px;background:rgba(11,27,51,.85);color:#fff;font-size:.66rem;padding:4px 9px;border-radius:8px;font-weight:700;letter-spacing:.4px;z-index:2}
 .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
 .card-body h3{font-size:.98rem;font-weight:800;color:var(--navy);line-height:1.3}
 .desc{font-size:.82rem;color:var(--muted);line-height:1.45}
@@ -163,12 +163,16 @@ footer ul{list-style:none;display:flex;flex-direction:column;gap:9px;font-size:.
 footer ul a:hover{color:var(--gold)}
 .foot-bottom{border-top:1px solid rgba(255,255,255,.1);padding:18px 0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.8rem}
 .foot-bottom a{color:#6b7f9e}
+.credits{padding:0 0 20px;font-size:.68rem;color:#5c6f8a;line-height:1.5}
+.credits a{color:#6b7f9e}
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);z-index:120;transition:transform .35s;pointer-events:none;font-family:var(--font)}
 .toast.show{transform:translate(-50%,0)}
 /* player edition cards */
 .player-img{background:radial-gradient(circle at 70% 30%,#1c3f7d,transparent 65%),linear-gradient(160deg,#0d2246,#14325c)}
+.player-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .45s;transform-origin:center}
+.card:hover .player-photo{transform:scale(1.08)}
 .card-img svg.player-bat{width:132px;height:132px}
 @media(max-width:920px){
 .hero-grid{grid-template-columns:1fr;padding:44px 0 52px;text-align:center}
