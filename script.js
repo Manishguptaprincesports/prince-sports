@@ -1,169 +1,57 @@
-// ===== CART SYSTEM =====
-const WHATSAPP_NUMBER = '919875647399';
-
-let cart = JSON.parse(localStorage.getItem('ps_cart') || '[]');
-
-function saveCart(){ localStorage.setItem('ps_cart', JSON.stringify(cart)); }
-
-function addToCart(id, name, price){
-  const existing = cart.find(i => i.id === id);
-  if(existing){ existing.qty++; }
-  else { cart.push({id, name, price, qty:1}); }
-  saveCart();
-  updateCartUI();
-  // Button feedback
-  const btn = document.querySelector('[data-pid="'+id+'"]');
-  if(btn){
-    btn.classList.add('added');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><polyline points="20 6 9 17 4 12"/></svg> Added!';
-    setTimeout(() => {
-      btn.classList.remove('added');
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg> Add to Cart';
-    }, 1200);
-  }
-  // Open cart drawer briefly
-  openCart();
-}
-
-function changeQty(id, delta){
-  const item = cart.find(i => i.id === id);
-  if(!item) return;
-  item.qty += delta;
-  if(item.qty <= 0){ cart = cart.filter(i => i.id !== id); }
-  saveCart();
-  updateCartUI();
-}
-
-function removeItem(id){
-  cart = cart.filter(i => i.id !== id);
-  saveCart();
-  updateCartUI();
-}
-
-function getTotal(){
-  return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-}
-
-function getItemCount(){
-  return cart.reduce((sum, i) => sum + i.qty, 0);
-}
-
-function formatPrice(n){
-  return '₹' + n.toLocaleString('en-IN');
-}
-
-function updateCartUI(){
-  const badge = document.getElementById('cartBadge');
-  const count = getItemCount();
-  if(count > 0){ badge.textContent = count; badge.classList.remove('hidden'); }
-  else { badge.classList.add('hidden'); }
-
-  const itemsEl = document.getElementById('cartItems');
-  const totalEl = document.getElementById('cartTotal');
-  const orderBtn = document.getElementById('orderBtn');
-
-  if(cart.length === 0){
-    itemsEl.innerHTML = '<div class="cart-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><p>Your cart is empty.<br>Add products to place an order.</p></div>';
-    totalEl.textContent = formatPrice(0);
-    orderBtn.style.opacity = '.5';
-    orderBtn.style.pointerEvents = 'none';
-    return;
-  }
-
-  itemsEl.innerHTML = cart.map(i => `
-    <div class="cart-item">
-      <div class="ci-name">${i.name}</div>
-      <div class="qty">
-        <button onclick="changeQty('${i.id}', -1)">−</button>
-        <span>${i.qty}</span>
-        <button onclick="changeQty('${i.id}', 1)">+</button>
-      </div>
-      <div class="ci-price">${formatPrice(i.price * i.qty)}</div>
-    </div>
-  `).join('');
-
-  totalEl.textContent = formatPrice(getTotal());
-  orderBtn.style.opacity = '1';
-  orderBtn.style.pointerEvents = 'auto';
-}
-
-function openCart(){
-  document.getElementById('cartOverlay').classList.add('open');
-  document.getElementById('cartDrawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeCart(){
-  document.getElementById('cartOverlay').classList.remove('open');
-  document.getElementById('cartDrawer').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function sendWhatsAppOrder(){
-  if(cart.length === 0) return;
-  let msg = '*🛒 Order from Prince Sports Website*\n\n';
-  cart.forEach(i => {
-    msg += `• ${i.name} x${i.qty} = ${formatPrice(i.price * i.qty)}\n`;
-  });
-  msg += `\n*Total: ${formatPrice(getTotal())}*\n\nPlease confirm my order. Thank you!`;
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
-}
-
-// ===== NAV / MOBILE MENU =====
-const ham = document.getElementById('hamburger');
-const mm = document.getElementById('mobileMenu');
-if(ham){
-  ham.addEventListener('click', () => {
-    const open = mm.classList.toggle('open');
-    ham.setAttribute('aria-expanded', open);
-  });
-  mm.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    mm.classList.remove('open');
-    ham.setAttribute('aria-expanded','false');
-  }));
-}
-
-// ===== YEAR =====
-document.getElementById('year').textContent = new Date().getFullYear();
-
-// ===== OPEN/CLOSED STATUS (IST) =====
-const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-function kolkataNow(){ return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'})); }
-function setStatus(){
-  const now = kolkataNow();
-  const d = now.getDay();
-  const mins = now.getHours()*60 + now.getMinutes();
-  const OPEN = 10*60, CLOSE = 19*60 + 30;
-  const isOpen = d !== 0 && mins >= OPEN && mins < CLOSE;
-  let msg, cls;
-  if(isOpen){ msg = 'Open now · closes 7:30 pm'; cls = 'open'; }
-  else if(d === 0){ msg = 'Closed · opens Mon 10 am'; cls = 'closed'; }
-  else if(mins < OPEN){ msg = 'Closed · opens 10 am today'; cls = 'closed'; }
-  else { msg = (d === 6 ? 'Closed · opens Mon 10 am' : 'Closed · opens 10 am tomorrow'); cls = 'closed'; }
-  const html = `<span class="dot"></span>${msg}`;
-  [['status'],['status2']].forEach(([id]) => {
-    const el = document.getElementById(id);
-    if(el){ el.className = 'status '+cls; el.innerHTML = html; }
-  });
-  document.querySelectorAll('#hoursTable tr').forEach(tr => tr.classList.remove('today'));
-  const row = document.querySelector('#hoursTable tr[data-day="'+days[d]+'"]');
-  if(row) row.classList.add('today');
-}
-setStatus();
-setInterval(setStatus, 60000);
-
-// ===== REVEAL ON SCROLL =====
-const io = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if(e.isIntersecting){
-      e.target.style.transitionDelay = (i % 4 * 60) + 'ms';
-      e.target.classList.add('visible');
-      io.unobserve(e.target);
-    }
-  });
-}, {threshold:0.12});
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-// ===== INIT =====
-updateCartUI();
+/* Prince Sports v3 — cart, search, filters, status */
+var WA='919875647399';
+var cart=[];
+try{cart=JSON.parse(localStorage.getItem('ps_cart')||'[]')}catch(e){cart=[]}
+function fmt(n){return '₹'+n.toLocaleString('en-IN')}
+function saveCart(){localStorage.setItem('ps_cart',JSON.stringify(cart));renderCart();updateBadges()}
+function cartCount(){return cart.reduce(function(a,i){return a+i.qty},0)}
+function cartTotal(){return cart.reduce(function(a,i){return a+i.qty*i.price},0)}
+function updateBadges(){var c=cartCount();var bs=document.querySelectorAll('.cart-badge');for(var j=0;j<bs.length;j++){bs[j].textContent=c;bs[j].classList.toggle('hidden',c===0)}}
+function addToCart(pid,name,price){var f=null;for(var i=0;i<cart.length;i++){if(cart[i].pid===pid)f=cart[i]}
+if(f){f.qty++}else{cart.push({pid:pid,name:name,price:price,qty:1})}
+saveCart();toast(name+' added ✓')}
+function changeQty(pid,d){var f=null;for(var i=0;i<cart.length;i++){if(cart[i].pid===pid)f=cart[i]}
+if(!f)return;f.qty+=d;if(f.qty<1)cart=cart.filter(function(i){return i.pid!==pid});saveCart()}
+function removeItem(pid){cart=cart.filter(function(i){return i.pid!==pid});saveCart()}
+function renderCart(){var el=document.getElementById('cartItems');var tot=document.getElementById('cartTotal');if(!el)return;
+if(!cart.length){el.innerHTML='<div class="cart-empty">🏀<br>Your cart is empty<br><span style="font-size:.85rem">Add some cricket gear!</span></div>';if(tot)tot.textContent=fmt(0);return}
+var h='';for(var i=0;i<cart.length;i++){var it=cart[i];
+h+='<div class="c-item"><div style="flex:1"><h4>'+it.name+'</h4><div class="cp">'+fmt(it.price)+' each</div><div class="qty"><button onclick="changeQty(\''+it.pid+'\',-1)">−</button><span>'+it.qty+'</span><button onclick="changeQty(\''+it.pid+'\',1)">+</button><button class="rm" onclick="removeItem(\''+it.pid+'\')">Remove</button></div></div><div style="font-weight:900">'+fmt(it.price*it.qty)+'</div></div>'}
+el.innerHTML=h;if(tot)tot.textContent=fmt(cartTotal())}
+function openCart(){document.getElementById('cartDrawer').classList.add('open');document.getElementById('cartOverlay').classList.add('open')}
+function closeCart(){document.getElementById('cartDrawer').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open')}
+function sendWhatsAppOrder(){if(!cart.length){toast('Your cart is empty');return}
+var lines=['*NEW ORDER — Prince Sports Website*',''];
+for(var i=0;i<cart.length;i++){var it=cart[i];lines.push('• '+it.name+' x '+it.qty+' = '+fmt(it.price*it.qty))}
+lines.push('');lines.push('*Total: '+fmt(cartTotal())+'*');lines.push('');lines.push('Please confirm availability. Thank you!');
+window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(lines.join('\n')),'_blank')}
+var toastT=null;
+function toast(m){var t=document.querySelector('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}
+t.textContent=m;t.classList.add('show');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show')},2200)}
+var activeCat='all';
+function setFilter(c,btn){activeCat=c;var ch=document.querySelectorAll('.chip');for(var i=0;i<ch.length;i++)ch[i].classList.toggle('active',ch[i]===btn);applyFilters()}
+function applyFilters(){var inp=document.getElementById('searchInput');var q=inp?inp.value.trim().toLowerCase():'';var n=0;
+var cards=document.querySelectorAll('.card');
+for(var i=0;i<cards.length;i++){var c=cards[i];
+var ok=(activeCat==='all'||c.getAttribute('data-cat')===activeCat)&&(!q||(c.getAttribute('data-name')||'').toLowerCase().indexOf(q)>-1);
+c.style.display=ok?'':'none';if(ok)n++}
+var nr=document.getElementById('noResults');if(nr)nr.style.display=n?'none':'block'}
+function setStatus(){var now=new Date();var d=now.getDay();var h=now.getHours()+now.getMinutes()/60;
+var open=d>=1&&d<=6&&h>=10&&h<19.5;
+var html=open?'<span class="open-tag">● OPEN NOW</span>':'<span class="closed-tag">● CLOSED NOW</span>';
+var s1=document.getElementById('status');if(s1)s1.innerHTML=html;
+var s2=document.getElementById('status2');if(s2)s2.innerHTML=html;
+var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var trs=document.querySelectorAll('#hoursTable tr');
+for(var i=0;i<trs.length;i++)trs[i].classList.toggle('today',trs[i].getAttribute('data-day')===days[d])}
+document.addEventListener('DOMContentLoaded',function(){
+renderCart();updateBadges();setStatus();setInterval(setStatus,60000);
+var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();
+var hb=document.getElementById('hamburger');if(hb)hb.onclick=function(){document.getElementById('mobileMenu').classList.toggle('open')};
+var mm=document.getElementById('mobileMenu');
+if(mm){var links=mm.querySelectorAll('a');for(var i=0;i<links.length;i++)links[i].onclick=function(){mm.classList.remove('open')}}
+var si=document.getElementById('searchInput');if(si)si.addEventListener('input',applyFilters);
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1});var rv=document.querySelectorAll('.reveal');for(var k=0;k<rv.length;k++)io.observe(rv[k])}
+else{var rv2=document.querySelectorAll('.reveal');for(var k2=0;k2<rv2.length;k2++)rv2[k2].classList.add('in')}
+window.addEventListener('scroll',function(){var n=document.querySelector('.nav');if(n)n.classList.toggle('scrolled',window.scrollY>10)},{passive:true});
+});
