@@ -147,7 +147,7 @@ tr.today td{background:#fff7ed;font-weight:800;color:var(--orange-d)}
 .cart-total .lbl2{color:var(--muted);font-weight:600}
 .amt{font-size:1.5rem;font-weight:900;color:var(--navy)}
 .cart-note{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.45}
-.cart-fab{position:fixed;right:18px;bottom:18px;z-index:80;width:58px;height:58px;border-radius:50%;background:var(--green);color:#fff;border:0;cursor:pointer;box-shadow:0 12px 30px rgba(22,163,74,.45);display:none;align-items:center;justify-content:center;position:fixed}
+.cart-fab{position:fixed;right:18px;bottom:18px;z-index:80;width:58px;height:58px;border-radius:50%;background:var(--green);color:#fff;border:0;cursor:pointer;box-shadow:0 12px 30px rgba(22,163,74,.45);display:none;align-items:center;justify-content:center}
 .cart-fab svg{width:24px;height:24px}
 .cart-fab .cart-badge{box-shadow:0 0 0 2px #16a34a}
 .hidden{display:none!important}
@@ -167,6 +167,9 @@ footer ul a:hover{color:var(--gold)}
 .reveal.in{opacity:1;transform:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);z-index:120;transition:transform .35s;pointer-events:none;font-family:var(--font)}
 .toast.show{transform:translate(-50%,0)}
+/* player edition cards */
+.player-img{background:radial-gradient(circle at 70% 30%,#1c3f7d,transparent 65%),linear-gradient(160deg,#0d2246,#14325c)}
+.card-img svg.player-bat{width:132px;height:132px}
 @media(max-width:920px){
 .hero-grid{grid-template-columns:1fr;padding:44px 0 52px;text-align:center}
 .hero-text .sub,.hero-text .rating-chip{margin-left:auto;margin-right:auto}
@@ -182,4 +185,4 @@ footer ul a:hover{color:var(--gold)}
 .nav-links{display:none}
 .cart-fab{display:flex}
 }
-@media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}.card-body{padding:12px;gap:6px}.card-img{height:140px}.card-img svg{width:62px;height:62px}.card-body h3{font-size:.88rem}.desc{font-size:.76rem}.price{font-size:1rem}.sec{padding:52px 0}}
+@media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}.card-body{padding:12px;gap:6px}.card-img{height:140px}.card-img svg{width:62px;height:62px}.card-body h3{font-size:.88rem}.desc{font-size:.76rem}.price{font-size:1rem}.sec{padding:52px 0}.card-img svg.player-bat{width:100px;height:100px}}
